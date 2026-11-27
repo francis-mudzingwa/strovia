@@ -1,0 +1,66 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  transition: transform 0.12s ease, box-shadow 0.15s ease, opacity 0.12s ease, filter 0.12s ease;
+}
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+button:disabled {
+  cursor: default;
+}
+
+.stat-tile,
+.patient-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.stat-tile:hover,
+.patient-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(32,38,31,0.08), 0 10px 22px rgba(32,38,31,0.08);
+}
+
+.task-row {
+  transition: background 0.12s ease;
+}
+.task-row:hover:not(:disabled) {
+  background: #F7F3EA !important;
+}
+
+:focus-visible {
+  outline: 2px solid #3F6C51;
+  outline-offset: 2px;
+}
+
+/* Landing page: brand and tagline, the sign-in card, then the feature list. On a phone the sign-in card comes second so it is
+   on the first screen instead of ~1,000 px down. */
+.landing-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+  grid-template-areas: "brand auth" "features auth";
+  column-gap: 56px;
+  align-items: start;
+}
+.landing-brand { grid-area: brand; }
+.landing-features { grid-area: features; }
+.landing-auth { grid-area: auth; }
+@media (max-width: 860px) {
+  .landing-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "brand" "auth" "features";
+    row-gap: 24px;
+  }
+  .landing-lede { margin-bottom: 0 !important; }
+}
+
+/* Netlify adds a "Powered by Netlify" badge to the page. On a phone it sat on top of the bottom navigation, so move it up above it. */
+@media (max-width: 768px) {
+  body:has(.bottom-nav) #nl-badge-frame { bottom: 78px !important; }
+}
