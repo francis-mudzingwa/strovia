@@ -48,7 +48,7 @@ begin
   select value into secret from app_secrets where name = 'cron_secret';
   if secret is not null then
     perform net.http_post(
-      url := 'https://tbxgxbfxndegkbqwebis.supabase.co/functions/v1/send-mail',
+      url := 'https://YOUR-PROJECT-REF.supabase.co/functions/v1/send-mail',
       headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', secret),
       body := jsonb_build_object('type', 'message_notice', 'user_ids', to_jsonb(recipients), 'urgent', new.urgent)
     );
@@ -235,7 +235,7 @@ begin
     if secret is not null then
       begin
         perform net.http_post(
-          url := 'https://tbxgxbfxndegkbqwebis.supabase.co/functions/v1/send-mail',
+          url := 'https://YOUR-PROJECT-REF.supabase.co/functions/v1/send-mail',
           headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', secret),
           body := jsonb_build_object('type', 'profile_change_result', 'user_id', r.user_id, 'approved', p_approve)
         );

@@ -25,7 +25,7 @@ language plpgsql security definer set search_path = public as $$
 begin
   if new.role = 'caregiver' and not new.approved then
     perform net.http_post(
-      url := 'https://tbxgxbfxndegkbqwebis.supabase.co/functions/v1/send-mail',
+      url := 'https://YOUR-PROJECT-REF.supabase.co/functions/v1/send-mail',
       headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', '__CRON_SECRET__'),
       body := jsonb_build_object('type', 'new_registration', 'userId', new.user_id)
     );

@@ -33,7 +33,7 @@ begin
       '0 13,14 * * 0',
       format($cmd$
         select net.http_post(
-          url := 'https://tbxgxbfxndegkbqwebis.supabase.co/functions/v1/send-mail',
+          url := 'https://YOUR-PROJECT-REF.supabase.co/functions/v1/send-mail',
           headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', %L),
           body := '{"type":"weekly_digest"}'::jsonb
         );

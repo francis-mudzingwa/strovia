@@ -200,7 +200,7 @@ begin
       if secret is not null and recipients is not null then
         select nullif(trim(coalesce(first_name, '') || ' ' || coalesce(last_name, '')), '') into who from staff_accounts where user_id = auth.uid();
         perform net.http_post(
-          url := 'https://tbxgxbfxndegkbqwebis.supabase.co/functions/v1/send-reminders',
+          url := 'https://YOUR-PROJECT-REF.supabase.co/functions/v1/send-reminders',
           headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', secret),
           body := jsonb_build_object('event', 'message_urgent', 'user_ids', to_jsonb(recipients), 'thread_id', p_thread, 'actor_name', coalesce(who, 'A colleague'))
         );

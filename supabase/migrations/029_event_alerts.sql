@@ -32,7 +32,7 @@ begin
   select nullif(trim(coalesce(first_name, '') || ' ' || coalesce(last_name, '')), '') into who
     from staff_accounts where user_id = auth.uid();
   perform net.http_post(
-    url := 'https://tbxgxbfxndegkbqwebis.supabase.co/functions/v1/send-reminders',
+    url := 'https://YOUR-PROJECT-REF.supabase.co/functions/v1/send-reminders',
     headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', secret),
     body := jsonb_build_object('event', p_event, 'patient_id', p_patient, 'actor_id', auth.uid(), 'actor_name', coalesce(who, 'Someone'), 'label', p_label)
   );
@@ -151,7 +151,7 @@ begin
       '0 9 * * 0',
       format($cmd$
         select net.http_post(
-          url := 'https://tbxgxbfxndegkbqwebis.supabase.co/functions/v1/send-mail',
+          url := 'https://YOUR-PROJECT-REF.supabase.co/functions/v1/send-mail',
           headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', %L),
           body := '{"type":"weekly_digest"}'::jsonb
         );
