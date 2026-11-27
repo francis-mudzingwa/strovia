@@ -3,7 +3,7 @@
 **Stroke recovery monitoring for care teams.** A shared, private web app where caregivers, family and administrators follow a stroke
 survivor's care plan, daily symptoms and recovery. Fixed safety rules decide when something needs attention; AI only explains why.
 
-[**Try the live app**](https://strovia-app.netlify.app/) · [**Read the capstone portfolio**](https://strovia-app.netlify.app/portfolio/)
+[**Try the live demo (one click, no account)**](https://strovia-demo.netlify.app/) · [**Read the capstone portfolio**](https://strovia-app.netlify.app/portfolio/)
 
 > Capstone project, MS in Information Technology (Healthcare Technologies), Clark University, Fall 2026.
 > Strovia is a prototype. It uses **sample data only**, has **not** been assessed for HIPAA compliance, and is **not** a medical device.
@@ -36,6 +36,17 @@ Key decisions: rules decide and AI explains; access is enforced in the database,
 2. Deploy the functions in `supabase/functions` and set their secrets in Supabase (AI key, email credentials, web-push keys).
 3. Copy `.env.example` to `.env` and add your project's URL and public key.
 4. `npm install`, then `npm run dev`.
+
+## The one-click demo
+
+The demo is a **separate copy**: the same app built with `VITE_DEMO=true`, pointed at its own throw-away Supabase project that holds only
+made-up staff and sample patients. Everything for it lives in `supabase/demo/`:
+
+- `seed_demo.sql` fills and, every night, rebuilds the sample data (`demo_reset()`).
+- `functions/demo-login` signs in to the four fixed demo accounts. It refuses to run unless the project has `DEMO_MODE=true`.
+- `functions/analyze-checkin` is a rule-based stand-in for the AI note, so the demo never calls an AI service.
+
+The real app is built without `VITE_DEMO`, so none of this shows there.
 
 ## Notes
 

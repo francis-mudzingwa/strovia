@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Eye, EyeOff, MailCheck, CheckCircle2, AlertTriangle } from 'lucide-react'
+import { Eye, EyeOff, MailCheck, CheckCircle2, AlertTriangle, ClipboardCheck, HeartHandshake, ShieldCheck } from 'lucide-react'
 import { BirthdayFields } from "./Birthdays.jsx"
 import { supabase } from './supabaseClient.js'
 
@@ -18,6 +18,14 @@ export function passwordStrength(pw) {
   return { label: "Strong", color: "#3F6C51" }
 }
 
+// The public try-it copy of the app (a separate project with made-up people and sample patients) is built with VITE_DEMO=true.
+// It swaps the sign-in form for one-click demo buttons. The real app is never built with this switch.
+const DEMO = import.meta.env.VITE_DEMO === "true"
+const DEMO_ROLES = [
+  { role: "caregiver", Icon: ClipboardCheck, title: "Caregiver", text: "Arrive on shift, do the daily check-in, log readings, medicines and meals." },
+  { role: "relative", Icon: HeartHandshake, title: "Family", text: "Follow one person's recovery, read the care plan and step in as a proxy." },
+  { role: "admin", Icon: ShieldCheck, title: "Administrator", text: "Write care plans, set alert limits, schedule shifts and review the audit trail." },
+]
 const COMPANY_ID_PATTERN = /^c\d{6}$/i
 const DEVICE_KEY = "strovia-admin-device"
 const readDeviceToken = () => { try { return localStorage.getItem(DEVICE_KEY) } catch { return null } }
@@ -117,6 +125,65 @@ export default function AuthCard({ banner }) {
     }
     setBusy(false)
   }
+
+  async function handleDemo(role) {
+    setError(null)
+    setBusy(true)
+    const { data, error } = await supabase.functions.invoke("demo-login", { body: { role } })
+    if (error || !data?.session) {
+      setError(data?.error || "The demo couldn't start just now. Please try again in a moment.")
+    } else {
+      await supabase.auth.setSession({ access_token: data.session.access_token, refresh_token: data.session.refresh_token })
+    }
+    setBusy(false)
+  }
+
+  // A link like /?try=family signs straight in as that demo role (used by the buttons and the live frame on the portfolio page).
+  useEffect(() => {
+    if (!DEMO) return
+    const wanted = new URLSearchParams(window.location.search).get("try")
+    if (DEMO_ROLES.some((r) => r.role === wanted)) {
+      window.history.replaceState({}, "", window.location.pathname)
+      handleDemo(wanted)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const demoPanel = (
+    <div>
+      <div style={{ fontSize: 19, fontWeight: 700, color: colors.ink, marginBottom: 5 }}>Try Strovia</div>
+      <div style={{ fontSize: 13.5, color: colors.inkFaint, marginBottom: 18, lineHeight: 1.5 }}>
+        No account needed. Pick a role and you are signed in at once. Everything here is made-up sample data, and it is reset every night. Nothing you do reaches a real person.
+      </div>
+      <div style={{ display: "grid", gap: 10 }}>
+        {DEMO_ROLES.map(({ role, Icon, title, text }) => (
+          <button
+            key={role}
+            type="button"
+            disabled={busy}
+            onClick={() => handleDemo(role)}
+            style={{
+              display: "flex", alignItems: "center", gap: 14, textAlign: "left", width: "100%", boxSizing: "border-box",
+              padding: "14px 16px", borderRadius: 14, border: `1px solid ${colors.hairline}`, background: "#fff",
+              cursor: busy ? "default" : "pointer", opacity: busy ? 0.7 : 1, color: colors.ink,
+            }}
+          >
+            <span style={{ width: 44, height: 44, borderRadius: 12, background: colors.sageTint, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <Icon size={22} color={colors.sageDeep} />
+            </span>
+            <span style={{ flex: 1 }}>
+              <span style={{ display: "block", fontSize: 16, fontWeight: 700 }}>{busy ? "Please wait..." : `Try as ${title}`}</span>
+              <span style={{ display: "block", fontSize: 13.5, color: colors.inkSoft, lineHeight: 1.4, marginTop: 2 }}>{text}</span>
+            </span>
+          </button>
+        ))}
+      </div>
+      {error && <p style={{ color: colors.rust, fontSize: 13.5, marginTop: 12, marginBottom: 0, lineHeight: 1.45 }}>{error}</p>}
+      <p style={{ fontSize: 12.5, color: colors.inkFaint, marginTop: 16, marginBottom: 0, lineHeight: 1.5 }}>
+        Strovia is a student prototype, not a medical device. Admins in the real app also confirm their sign-in with an emailed code; the demo skips that.
+      </p>
+    </div>
+  )
 
   // The administrator's second step: the 6-digit code just emailed to them.
   async function handleVerifyCode(e) {
@@ -288,7 +355,7 @@ export default function AuthCard({ banner }) {
         </div>
       ) : (
         <>
-          {tab === "login" ? (
+          {DEMO ? demoPanel : tab === "login" ? (
             <>
               <div style={{ fontSize: 19, fontWeight: 700, color: colors.ink, marginBottom: 5 }}>Welcome back</div>
               <div style={{ fontSize: 13.5, color: colors.inkFaint, marginBottom: 20 }}>Caregivers log in with their Company ID. Family members log in with their email.</div>

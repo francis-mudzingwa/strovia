@@ -1,4 +1,5 @@
-export const OFFICE_PHONE = "(508) 502-0070"
+// The public try-it copy sets VITE_OFFICE_PHONE to a made-up number so it never shows a real one.
+export const OFFICE_PHONE = import.meta.env.VITE_OFFICE_PHONE || "(555) 010-0100"
 
 export const telHref = (phone) => `tel:${String(phone || "").replace(/[^\d+]/g, "")}`
 

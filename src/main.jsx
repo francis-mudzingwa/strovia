@@ -2,6 +2,7 @@ import { StrictMode, useState, useEffect, useRef, useCallback } from 'react'
 import { createRoot } from 'react-dom/client'
 import { LogoMark } from './Logo.jsx'
 import UpdateBanner from './UpdateBanner.jsx'
+import DemoBanner, { DemoReadySignal } from './DemoBanner.jsx'
 import { Eye, EyeOff, ClipboardList, Activity, Sparkles, FileText, CalendarDays, HeartHandshake, ShieldCheck } from 'lucide-react'
 import './index.css'
 import App from './App.jsx'
@@ -388,6 +389,8 @@ function Root() {
           onSignOut={() => endSession("Logged out")}
         />
       ) : (
+        <>
+        <DemoReadySignal />
         <App
           userEmail={session.user.email}
           userId={session.user.id}
@@ -395,6 +398,7 @@ function Root() {
           onMemberUpdated={(patch) => setMember((m) => ({ ...m, ...patch }))}
           onSignOut={() => endSession("Logged out")}
         />
+        </>
       )}
       {showTimeoutWarning && (
         <div style={{
@@ -422,6 +426,7 @@ applyTextSize()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <DemoBanner />
     <Root />
     <UpdateBanner />
   </StrictMode>,
